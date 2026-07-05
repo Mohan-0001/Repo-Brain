@@ -1,0 +1,38 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Repo Brain logo">
+  <defs>
+    <linearGradient id="rb-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C6FFF"/>
+      <stop offset="100%" stop-color="#45E8D1"/>
+    </linearGradient>
+    <filter id="rb-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- connecting edges -->
+  <g stroke="url(#rb-grad)" stroke-width="1.4" opacity="0.85">
+    <line x1="16" y1="18" x2="32" y2="10"/>
+    <line x1="32" y1="10" x2="48" y2="18"/>
+    <line x1="16" y1="18" x2="16" y2="40"/>
+    <line x1="48" y1="18" x2="48" y2="40"/>
+    <line x1="16" y1="40" x2="32" y2="54"/>
+    <line x1="48" y1="40" x2="32" y2="54"/>
+    <line x1="16" y1="18" x2="48" y2="40"/>
+    <line x1="48" y1="18" x2="16" y2="40"/>
+    <line x1="32" y1="10" x2="32" y2="54"/>
+  </g>
+
+  <!-- nodes -->
+  <g fill="url(#rb-grad)" filter="url(#rb-glow)">
+    <circle cx="32" cy="10" r="4.2"/>
+    <circle cx="16" cy="18" r="3.4"/>
+    <circle cx="48" cy="18" r="3.4"/>
+    <circle cx="16" cy="40" r="3.4"/>
+    <circle cx="48" cy="40" r="3.4"/>
+    <circle cx="32" cy="54" r="4.6"/>
+  </g>
+</svg>

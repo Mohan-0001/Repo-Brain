@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Repo Brain — shared memory for coding agents</title>
+<meta name="description" content="Repo Brain gives every developer's Claude Code session on the same repo access to one shared Cognee-backed knowledge graph — no more re-explaining decisions your teammate's agent already made." />
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+
+<canvas id="graph-bg"></canvas>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand">
+      <img src="assets/logo.svg" alt="" />
+      Repo Brain
+    </a>
+    <div class="nav-links">
+      <a href="#problem">Why</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#setup">Setup</a>
+      <a href="about.html">About</a>
+    </div>
+    <a href="#setup" class="btn btn-primary">Get started</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="container">
+    <span class="eyebrow">Built on Cognee · Claude Code hooks</span>
+    <h1>Your repo<br /><span class="grad-text">remembers.</span></h1>
+    <p class="lead">
+      Repo Brain gives every developer's Claude Code session on the same
+      repository access to one shared knowledge graph. A decision made on
+      one laptop is recalled automatically on the next — no Slack message,
+      no re-explaining, no drift.
+    </p>
+    <div class="hero-ctas">
+      <a href="#setup" class="btn btn-primary">Set it up →</a>
+      <a href="#how-it-works" class="btn btn-ghost">See how it works</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ PROBLEM ============ -->
+<section id="problem">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">The problem</span>
+      <h2>Every agent session starts from zero</h2>
+      <p>Coding agents are only as good as what they've been told — and right now, what they've been told dies with the session.</p>
+    </div>
+
+    <div class="compare">
+      <div class="glass compare-card bad reveal">
+        <h3><span class="dot"></span>Without Repo Brain</h3>
+        <ul>
+          <li>Dev A's agent decides to use Zod over Joi for validation — that decision lives only in Dev A's local session.</li>
+          <li>Dev B's agent, on a different machine, re-derives the same decision from scratch, or picks something else entirely.</li>
+          <li>Conventions drift silently across a team as each agent reasons in isolation.</li>
+          <li>Institutional knowledge about *why* a call was made evaporates the moment the terminal closes.</li>
+        </ul>
+      </div>
+      <div class="glass compare-card good reveal">
+        <h3><span class="dot"></span>With Repo Brain</h3>
+        <ul>
+          <li>Dev A's decision is written into a knowledge graph scoped to the repo, not the laptop.</li>
+          <li>Dev B's agent recalls it automatically on the very first relevant prompt — no manual sync step.</li>
+          <li>Conventions stay consistent because every agent is reasoning from the same shared memory.</li>
+          <li>When a file is deleted, the memory tied to it is pruned — the graph tracks the codebase's actual current state.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section id="how-it-works">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">How it works</span>
+      <h2>One pipeline, two Claude Code hooks</h2>
+      <p>No commands to run mid-session. It happens on every prompt and every response, automatically.</p>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipe-step reveal">
+        <div class="pipe-num">1</div>
+        <div>
+          <h4>A developer types a prompt</h4>
+          <p>Claude Code's <code>UserPromptSubmit</code> event fires before the model sees anything.</p>
+        </div>
+      </div>
+      <div class="pipe-step reveal">
+        <div class="pipe-num">2</div>
+        <div>
+          <h4>Repo Brain recalls relevant memory</h4>
+          <p><code>recall-context.mjs</code> searches the repo's Cognee dataset for anything related to the prompt, and injects the result as <code>additionalContext</code> — before Claude answers.</p>
+        </div>
+      </div>
+      <div class="pipe-step reveal">
+        <div class="pipe-num">3</div>
+        <div>
+          <h4>Claude answers with full context</h4>
+          <p>The agent responds as if it already knew the team's prior decision — because now it does.</p>
+        </div>
+      </div>
+      <div class="pipe-step reveal">
+        <div class="pipe-num">4</div>
+        <div>
+          <h4>The turn is remembered</h4>
+          <p>On <code>Stop</code>, <code>remember-decision.mjs</code> compresses what just happened into one decision-sentence and writes it into the same shared dataset.</p>
+        </div>
+      </div>
+      <div class="pipe-step reveal">
+        <div class="pipe-num">5</div>
+        <div>
+          <h4>Any other clone of the repo inherits it</h4>
+          <p>Because the dataset name is derived from <code>git remote origin url</code>, every laptop on the same repo converges on the exact same graph — automatically, with no manual sync.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LIFECYCLE VERBS ============ -->
+<section id="lifecycle">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">The Cognee lifecycle</span>
+      <h2>Four verbs, fully wired</h2>
+      <p>Repo Brain doesn't just store text — it uses Cognee's whole memory lifecycle.</p>
+    </div>
+    <div class="verb-grid">
+      <div class="glass verb-card reveal">
+        <span class="glyph">01</span>
+        <h4>remember()</h4>
+        <p>Every agent decision gets summarized and written into the repo's dataset via Cognee's add + cognify pipeline.</p>
+      </div>
+      <div class="glass verb-card reveal">
+        <span class="glyph">02</span>
+        <h4>recall()</h4>
+        <p>Every new prompt is checked against the graph before Claude answers, via Cognee's graph-grounded search.</p>
+      </div>
+      <div class="glass verb-card reveal">
+        <span class="glyph">03</span>
+        <h4>improve()</h4>
+        <p>When a human overrides an agent's suggestion, that feedback re-weights the graph so the next answer is sharper.</p>
+      </div>
+      <div class="glass verb-card reveal">
+        <span class="glyph">04</span>
+        <h4>forget()</h4>
+        <p>A git post-commit hook detects deleted files and prunes the memory tied to them, so the graph never goes stale.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARCHITECTURE ============ -->
+<section id="architecture">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Architecture</span>
+      <h2>What's actually in the repo</h2>
+      <p>Hover any file to see what it does.</p>
+    </div>
+
+    <div class="filetree reveal">
+      <div class="glass file-row" tabindex="0">
+        <div class="path"><span class="dim">.claude/</span>settings.json</div>
+        <div class="desc">Wires the two hooks into Claude Code's <span class="mono">UserPromptSubmit</span> and <span class="mono">Stop</span> lifecycle events. Claude Code picks this up automatically — nothing to run.</div>
+      </div>
+      <div class="glass file-row" tabindex="0">
+        <div class="path"><span class="dim">.claude/hooks/</span>recall-context.mjs</div>
+        <div class="desc">Fires before Claude answers. Searches the shared dataset and injects results as context. Fails open — a broken API call never blocks a prompt.</div>
+      </div>
+      <div class="glass file-row" tabindex="0">
+        <div class="path"><span class="dim">.claude/hooks/</span>remember-decision.mjs</div>
+        <div class="desc">Fires after Claude finishes responding. Compresses the turn into one decision-sentence and writes it into the shared dataset.</div>
+      </div>
+      <div class="glass file-row" tabindex="0">
+        <div class="path"><span class="dim">lib/</span>cognee-client.mjs</div>
+        <div class="desc">The wrapper around Cognee's REST API — remember, recall, improve, and forget, all in one place.</div>
+      </div>
+      <div class="glass file-row" tabindex="0">
+        <div class="path"><span class="dim">lib/</span>repo-id.mjs</div>
+        <div class="desc">Hashes <span class="mono">git remote origin url</span> into a single dataset name. This is the entire trick behind cross-laptop sharing.</div>
+      </div>
+      <div class="glass file-row" tabindex="0">
+        <div class="path"><span class="dim">scripts/</span>forget-deleted-files.mjs + post-commit.sh</div>
+        <div class="desc">A git hook that detects deleted files after every commit and prunes their memory from the graph.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SETUP ============ -->
+<section id="setup">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Setup</span>
+      <h2>From zero to shared memory</h2>
+      <p>Every teammate does this once. After that, it's invisible.</p>
+    </div>
+
+    <div class="reveal">
+      <div class="tabs" data-group="os">
+        <button class="tab-btn active" data-group="os" data-tab="mac">macOS / Linux</button>
+        <button class="tab-btn" data-group="os" data-tab="win">Windows</button>
+      </div>
+
+      <!-- ---------- MAC / LINUX ---------- -->
+      <div class="tab-panel active" data-group="os" data-tab="mac">
+
+        <div class="setup-step-title"><span class="step-badge">1</span>Get your Cognee Cloud connection details</div>
+        <p style="margin-bottom:14px;">In your Cognee Cloud dashboard, generate an API key, and copy the tenant-specific base URL and Tenant ID shown on the "Connection Details" panel.</p>
+
+        <div class="setup-step-title"><span class="step-badge">2</span>Clone the repo and set your environment</div>
+        <div class="codeblock">
+          <button class="copy-btn">Copy</button>
+          <pre>git clone https://github.com/your-username/repo-brain.git
+cd repo-brain
+cp .env.example .env
+# edit .env with COGNEE_BASE_URL, COGNEE_TENANT_ID, COGNEE_API_KEY</pre>
+        </div>
+
+        <div class="setup-step-title"><span class="step-badge">3</span>Install the forget() git hook</div>
+        <div class="codeblock">
+          <button class="copy-btn">Copy</button>
+          <pre>cp scripts/post-commit.sh .git/hooks/post-commit
+chmod +x .git/hooks/post-commit</pre>
+        </div>
+
+        <div class="setup-step-title"><span class="step-badge">4</span>Verify the hooks standalone</div>
+        <div class="codeblock">
+          <button class="copy-btn">Copy</button>
+          <pre>echo '{"last_assistant_message":"Decided to use Zod for validation.","cwd":"."}' \
+  | node .claude/hooks/remember-decision.mjs
+
+echo '{"prompt":"what validation library should I use?","cwd":"."}' \
+  | node .claude/hooks/recall-context.mjs</pre>
+        </div>
+        <p style="margin-bottom:14px;">The second command should print back the decision from the first. That round-trip working is the entire proof the system is wired correctly.</p>
+
+        <div class="setup-step-title"><span class="step-badge">5</span>Open Claude Code — that's it</div>
+        <div class="codeblock">
+          <button class="copy-btn">Copy</button>
+          <pre>claude</pre>
+        </div>
+        <p>The hooks fire silently on every prompt and every response from here on. No command to "start recording."</p>
+      </div>
+
+      <!-- ---------- WINDOWS ---------- -->
+      <div class="tab-panel" data-group="os" data-tab="win">
+
+        <div class="setup-step-title"><span class="step-badge">1</span>Get your Cognee Cloud connection details</div>
+        <p style="margin-bottom:14px;">In your Cognee Cloud dashboard, generate an API key, and copy the tenant-specific base URL and Tenant ID shown on the "Connection Details" panel.</p>
+
+        <div class="setup-step-title"><span class="step-badge">2</span>Clone the repo and set your environment</div>
+        <div class="codeblock">
+          <button class="copy-btn">Copy</button>
+          <pre>git clone https://github.com/your-username/repo-brain.git
+cd repo-brain
+copy .env.example .env
+notepad .env
+:: fill in COGNEE_BASE_URL, COGNEE_TENANT_ID, COGNEE_API_KEY</pre>
+        </div>
+
+        <div class="setup-step-title"><span class="step-badge">3</span>Install the forget() git hook</div>
+        <div class="codeblock">
+          <button class="copy-btn">Copy</button>
+          <pre>copy scripts\post-commit.sh .git\hooks\post-commit</pre>
+        </div>
+        <p style="margin-bottom:14px;">No chmod needed — Git for Windows handles hook execution itself.</p>
+
+        <div class="setup-step-title"><span class="step-badge">4</span>Verify the hooks standalone</div>
+        <p style="margin-bottom:10px;">CMD mangles quotes in <span class="mono">echo</span>, so write the test JSON to files first.</p>
+        <div class="codeblock">
+          <button class="copy-btn">Copy</button>
+          <pre>type test-remember.json | node .claude\hooks\remember-decision.mjs
+type test-recall.json | node .claude\hooks\recall-context.mjs</pre>
+        </div>
+        <p style="margin-bottom:14px;">The second command should print back the decision from the first.</p>
+
+        <div class="setup-step-title"><span class="step-badge">5</span>Open Claude Code — that's it</div>
+        <div class="codeblock">
+          <button class="copy-btn">Copy</button>
+          <pre>claude</pre>
+        </div>
+        <p>The hooks fire silently on every prompt and every response from here on.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <p>Repo Brain — built for the WeMakeDevs × Cognee hackathon.</p>
+    <div class="footer-links">
+      <a href="about.html">About the builder</a>
+      <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.cognee.ai" target="_blank" rel="noopener">Cognee</a>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/script.js"></script>
+</body>
+</html>
